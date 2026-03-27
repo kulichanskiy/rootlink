@@ -1,0 +1,152 @@
+.card {
+  background: var(--warm-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.25s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.bookmark {
+  position: absolute;
+  top: 14px; right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--border);
+  transition: color 0.2s, transform 0.2s;
+  line-height: 1;
+}
+
+.bookmark:hover  { color: var(--clay); transform: scale(1.2); }
+.bookmark.bookmarked { color: var(--clay); }
+
+.providerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: hsl(var(--hue), 55%, 52%);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.providerName {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--soil);
+}
+
+.providerSince {
+  font-size: 0.72rem;
+  color: var(--soil-mid);
+}
+
+.rating {
+  margin-left: auto;
+  margin-right: 28px;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--mustard);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.rating span { color: var(--soil); }
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--soil);
+}
+
+.desc {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--soil-mid);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.langTag {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  background: rgba(106,158,114,0.12);
+  color: var(--sage);
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+
+.catTag {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  background: rgba(201,123,75,0.1);
+  color: var(--clay);
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.price {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--soil);
+}
+
+.contactBtn {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 18px;
+  background: transparent;
+  border: 1.5px solid var(--clay);
+  color: var(--clay);
+  border-radius: 99px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.contactBtn:hover {
+  background: var(--clay);
+  color: #fff;
+}

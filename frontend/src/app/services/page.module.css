@@ -1,0 +1,12 @@
+.servicesHeader {
+  background: linear-gradient(135deg, #eef5ef 0%, #f7f0e6 100%);
+}
+
+.servicesDecor {
+  position: absolute;
+  top: -40px; right: -60px;
+  width: 340px; height: 340px;
+  background: radial-gradient(circle, rgba(106,158,114,0.2) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+}
