@@ -1,0 +1,31 @@
+.dot {
+  position: fixed;
+  top: -4px; left: -4px;
+  width: 8px; height: 8px;
+  background: var(--clay);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transition: opacity 0.2s;
+}
+
+.blob {
+  position: fixed;
+  top: -22px; left: -22px;
+  width: 44px; height: 44px;
+  border: 1.5px solid var(--clay);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+  transition: width 0.3s, height 0.3s, top 0.3s, left 0.3s, background 0.3s, border-color 0.3s;
+  mix-blend-mode: multiply;
+}
+
+.blob.grow {
+  top: -36px; left: -36px;
+  width: 72px; height: 72px;
+  background: rgba(201, 123, 75, 0.12);
+  border-color: var(--clay-dark);
+}

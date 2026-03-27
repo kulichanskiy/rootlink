@@ -1,0 +1,29 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 18px;
+  border-radius: 99px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--soil-mid);
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+}
+
+.pill:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.pill.active {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: #fff;
+}
