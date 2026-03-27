@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/events/1/requests/2/reject"
+method: PUT
+headers:
+  Authorization: Bearer {{token}}
+order: 11000

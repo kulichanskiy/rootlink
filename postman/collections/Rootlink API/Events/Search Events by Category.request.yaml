@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/events?category=Sports"
+method: GET
+queryParams:
+  category: Sports
+order: 2000

@@ -2,6 +2,11 @@
 workspace:
   id: b09fe8bd-600c-4f05-8261-f5a3d1f2ccdd
 
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+cloudResources:
+  collections:
+    ..\postman\collections\Rootlink API: bd77f8d2-8a0f-4a81-9bd6-d7731a6754c7
+
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:
 #localResources:

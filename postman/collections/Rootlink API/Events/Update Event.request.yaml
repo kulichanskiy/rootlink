@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/api/events/1"
+method: PUT
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Football Meetup - Updated",
+      "description": "Updated description",
+      "category": "Sports",
+      "tags": "football,outdoor",
+      "eventDatetime": "2026-06-21T18:00:00",
+      "location": "Burnaby",
+      "capacity": 15
+    }
+order: 7000

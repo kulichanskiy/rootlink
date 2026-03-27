@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{baseUrl}}/api/events/1/join"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "message": "Hi, I would love to join this event!"
+    }
+order: 9000

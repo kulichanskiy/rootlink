@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/api/services/1"
+method: PUT
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Math Tutoring - Updated",
+      "description": "Updated description",
+      "type": "Tutoring",
+      "tags": "math,education,calculus",
+      "location": "Vancouver"
+    }
+order: 6000

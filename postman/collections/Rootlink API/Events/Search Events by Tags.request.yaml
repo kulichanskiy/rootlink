@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/events?tags=football"
+method: GET
+queryParams:
+  tags: football
+order: 4000

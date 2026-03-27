@@ -1,0 +1,13 @@
+$kind: collection
+name: Rootlink API
+description: |-
+  Complete API test collection for the Rootlink community platform. 
+
+  QUICK START:
+  1. Register a user (Auth > Register)
+  2. Login (Auth > Login) — copy the token from the response
+  3. Open the collection Variables tab, paste token into 'token' current value
+  4. All other requests use {{token}} automatically
+variables:
+  baseUrl: http://localhost:8080
+  token: PASTE_YOUR_JWT_TOKEN_HERE

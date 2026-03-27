@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/api/services"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Math Tutoring",
+      "description": "High school and university math tutoring",
+      "type": "Tutoring",
+      "tags": "math,education",
+      "location": "Burnaby"
+    }
+order: 5000

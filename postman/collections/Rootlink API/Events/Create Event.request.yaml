@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/api/events"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Football Meetup",
+      "description": "Casual football game for newcomers",
+      "category": "Sports",
+      "tags": "football,outdoor",
+      "eventDatetime": "2026-06-20T18:00:00",
+      "location": "Surrey",
+      "capacity": 10
+    }
+order: 6000

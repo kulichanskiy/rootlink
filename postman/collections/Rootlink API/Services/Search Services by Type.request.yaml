@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/services?type=Tutoring"
+method: GET
+queryParams:
+  type: Tutoring
+order: 2000

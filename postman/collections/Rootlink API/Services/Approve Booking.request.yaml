@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/bookings/1/approve"
+method: PUT
+headers:
+  Authorization: Bearer {{token}}
+order: 9000

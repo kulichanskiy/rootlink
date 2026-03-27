@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{baseUrl}}/api/services?location=Burnaby"
+method: GET
+queryParams:
+  location: Burnaby
+order: 3000

@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{baseUrl}}/api/events"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "description": "Missing title, category, location, capacity"
+    }
+order: 6000
