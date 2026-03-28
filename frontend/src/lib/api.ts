@@ -1,10 +1,67 @@
-function apiBaseUrl(): string {
+/** Base for API calls. Default `/api` is rewritten to Spring Boot by `next.config.ts`. */
+export function apiBaseUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   if (explicit) return explicit.replace(/\/$/, "");
   return "/api";
 }
 
-type ApiEvent = {
+export class ApiError extends Error {
+  readonly status: number;
+  readonly fields?: Record<string, string>;
+
+  constructor(message: string, status: number, fields?: Record<string, string>) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.fields = fields;
+  }
+}
+
+async function parseErrorResponse(response: Response): Promise<ApiError> {
+  let message = `Request failed (${response.status})`;
+  let fields: Record<string, string> | undefined;
+  try {
+    const data = (await response.json()) as Record<string, unknown>;
+    if (typeof data.message === "string") message = data.message;
+    else if (typeof data.error === "string") message = data.error;
+    if (data.fields && typeof data.fields === "object" && data.fields !== null) {
+      fields = data.fields as Record<string, string>;
+      const first = Object.values(fields)[0];
+      if (first) message = first;
+    }
+  } catch {
+    /* ignore */
+  }
+  return new ApiError(message, response.status, fields);
+}
+
+type JsonInit = RequestInit & { token?: string | null };
+
+async function requestJson<T>(path: string, init?: JsonInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  if (init?.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+  const token = init?.token;
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  const { token: _t, ...rest } = init ?? {};
+  const response = await fetch(`${apiBaseUrl()}${path}`, {
+    ...rest,
+    headers,
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw await parseErrorResponse(response);
+  }
+
+  const text = await response.text();
+  if (!text) return undefined as T;
+  return JSON.parse(text) as T;
+}
+
+export type ApiEvent = {
   id: number;
   title: string;
   description?: string;
@@ -16,7 +73,7 @@ type ApiEvent = {
   organizerId?: number;
 };
 
-type ApiService = {
+export type ApiService = {
   id: number;
   title: string;
   description?: string;
@@ -144,22 +201,14 @@ export const toUiService = (service: ApiService): UiService => {
   };
 };
 
-const fetchJson = async <T>(path: string): Promise<T> => {
-  const response = await fetch(`${apiBaseUrl()}${path}`, {
-    cache: "no-store",
-  });
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-  return response.json() as Promise<T>;
-};
-
 export const fetchEvents = async (category?: string): Promise<UiEvent[]> => {
   const params = new URLSearchParams();
   if (category && category !== "All") params.set("category", category);
 
   const suffix = params.toString() ? `?${params.toString()}` : "";
-  const events = await fetchJson<ApiEvent[]>(`/events${suffix}`);
+  const events = await requestJson<ApiEvent[]>(`/events${suffix}`, {
+    method: "GET",
+  });
   return events.map(toUiEvent);
 };
 
@@ -168,6 +217,82 @@ export const fetchServices = async (type?: string): Promise<UiService[]> => {
   if (type && type !== "All") params.set("type", type);
 
   const suffix = params.toString() ? `?${params.toString()}` : "";
-  const services = await fetchJson<ApiService[]>(`/services${suffix}`);
+  const services = await requestJson<ApiService[]>(`/services${suffix}`, {
+    method: "GET",
+  });
   return services.map(toUiService);
 };
+
+// ── Auth & mutations (Spring Security JWT) ─────────────────────────────
+
+export type ApiUser = {
+  id: number;
+  email: string;
+  role?: string;
+  preferences?: string;
+  location?: string;
+  avatarUrl?: string;
+  createdAt?: string;
+};
+
+export async function loginRequest(
+  email: string,
+  password: string,
+): Promise<{ token: string; user: ApiUser }> {
+  return requestJson<{ token: string; user: ApiUser }>("/users/login", {  // ← correct
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function registerRequest(body: {
+  email: string;
+  password: string;
+  preferences?: string;
+  location?: string;
+}): Promise<ApiUser> {
+  return requestJson<ApiUser>("/users", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export type CreateEventPayload = {
+  title: string;
+  description?: string;
+  category: string;
+  tags?: string;
+  eventDatetime: string;
+  location: string;
+  capacity: number;
+};
+
+export async function createEventRequest(
+  payload: CreateEventPayload,
+  token: string,
+): Promise<ApiEvent> {
+  return requestJson<ApiEvent>("/events", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    token,
+  });
+}
+
+export type CreateServicePayload = {
+  title: string;
+  description?: string;
+  type: string;
+  tags?: string;
+  location: string;
+};
+
+export async function createServiceRequest(
+  payload: CreateServicePayload,
+  token: string,
+): Promise<ApiService> {
+  return requestJson<ApiService>("/services", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    token,
+  });
+}

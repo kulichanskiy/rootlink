@@ -45,6 +45,9 @@ public class SecurityConfig {
                 // Auth routes
                 .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll()  // registration
+                .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll() 
+                .requestMatchers(HttpMethod.GET, "/api/users/debug/hash").permitAll()
+
                 // Everything else requires a valid JWT
                 .anyRequest().authenticated()
             )

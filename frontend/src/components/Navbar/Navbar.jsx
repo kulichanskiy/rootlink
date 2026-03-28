@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
@@ -11,6 +12,7 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [open,     setOpen]     = useState(false);
 
@@ -36,9 +38,27 @@ export default function Navbar() {
           </li>
         ))}
         <li>
-          <Link href="/join" className={styles.cta} onClick={() => setOpen(false)}>
-            Join Free
-          </Link>
+          {user ? (
+            <div className={styles.auth}>
+              <span className={styles.userEmail} title={user.email}>
+                {user.email}
+              </span>
+              <button
+                type="button"
+                className={styles.logout}
+                onClick={() => {
+                  setOpen(false);
+                  logout();
+                }}
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <Link href="/join" className={styles.cta} onClick={() => setOpen(false)}>
+              Join Free
+            </Link>
+          )}
         </li>
       </ul>
 

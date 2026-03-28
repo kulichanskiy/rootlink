@@ -29,8 +29,12 @@ export default function Home() {
     Promise.all([fetchEvents(), fetchServices()])
       .then(([events, services]) => {
         if (!active) return;
-        if (events.length > 0) setFeaturedEvents(events.slice(0, 3));
-        if (services.length > 0) setFeaturedServices(services.slice(0, 3));
+        setFeaturedEvents(
+          events.length > 0 ? events.slice(0, 3) : [],
+        );
+        setFeaturedServices(
+          services.length > 0 ? services.slice(0, 3) : [],
+        );
       })
       .catch(() => {
         if (!active) return;
