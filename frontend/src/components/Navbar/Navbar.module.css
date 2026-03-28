@@ -81,6 +81,43 @@
   transform: translateY(-1px);
 }
 
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(220px, 42vw);
+}
+
+.userEmail {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--soil-mid);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout {
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 99px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--soil-mid);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.logout:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+  background: rgba(201, 123, 75, 0.06);
+}
+
 .burger {
   display: none;
   flex-direction: column;

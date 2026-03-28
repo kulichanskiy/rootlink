@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import Hero from "../components/Hero/Hero";
 import EventCard from "../components/EventCard/EventCard";
@@ -7,6 +7,8 @@ import ServiceCard from "../components/ServiceCard/ServiceCard";
 import Modal from "../components/Modal/Modal";
 import CursorBlob from "../components/CursorBlob/CursorBlob";
 import { EVENTS, SERVICES } from "../lib/data";
+import { fetchEvents, fetchServices } from "../lib/api";
+import type { UiEvent, UiService } from "../lib/api";
 import styles from "./page.module.css";
 
 type ModalState = {
@@ -16,6 +18,34 @@ type ModalState = {
 
 export default function Home() {
   const [modal, setModal] = useState<ModalState | null>(null);
+  const [featuredEvents, setFeaturedEvents] = useState<UiEvent[]>(EVENTS.slice(0, 3));
+  const [featuredServices, setFeaturedServices] = useState<UiService[]>(
+    SERVICES.slice(0, 3),
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    Promise.all([fetchEvents(), fetchServices()])
+      .then(([events, services]) => {
+        if (!active) return;
+        setFeaturedEvents(
+          events.length > 0 ? events.slice(0, 3) : [],
+        );
+        setFeaturedServices(
+          services.length > 0 ? services.slice(0, 3) : [],
+        );
+      })
+      .catch(() => {
+        if (!active) return;
+        setFeaturedEvents(EVENTS.slice(0, 3));
+        setFeaturedServices(SERVICES.slice(0, 3));
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <>
@@ -72,7 +102,7 @@ export default function Home() {
               </a>
             </div>
             <div className={styles.cardGrid}>
-              {EVENTS.slice(0, 3).map((ev) => (
+              {featuredEvents.map((ev) => (
                 <EventCard
                   key={ev.id}
                   event={ev}
@@ -139,7 +169,7 @@ export default function Home() {
               </a>
             </div>
             <div className={styles.cardGrid}>
-              {SERVICES.slice(0, 3).map((sv) => (
+              {featuredServices.map((sv) => (
                 <ServiceCard
                   key={sv.id}
                   service={sv}

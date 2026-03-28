@@ -5,6 +5,7 @@ import com.rootlink.dto.UserDTO;
 import com.rootlink.exception.ConflictException;
 import com.rootlink.exception.ResourceNotFoundException;
 import com.rootlink.model.User;
+import com.rootlink.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +15,12 @@ public class UserService {
 
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder) {
+    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     // ── UC-01: Register Account ──────────────────────────────
@@ -38,6 +41,27 @@ public class UserService {
         Long newId = userDAO.insert(user);
         user.setId(newId);
         return UserDTO.from(user);
+    }
+
+    // ── UC-02: Login ─────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public String login(String email, String password) {
+        System.out.println("DEBUG: attempting login for email='" + email + "'");
+        System.out.println("DEBUG: email length=" + email.length());
+
+        User user = userDAO.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password."));
+
+        System.out.println("DEBUG: found user id=" + user.getId());
+        System.out.println("DEBUG: stored hash=" + user.getPassword());
+        System.out.println("DEBUG: password matches=" + passwordEncoder.matches(password, user.getPassword()));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new ResourceNotFoundException("Invalid email or password.");
+        }
+
+        return jwtUtil.generateToken(user.getEmail(), user.getId());
     }
 
     // ── UC-03: Manage Profile ────────────────────────────────
