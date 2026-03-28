@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import EventCard from "../../components/EventCard/EventCard";
@@ -7,6 +7,8 @@ import FilterBar from "../../components/FilterBar/FilterBar";
 import Modal from "../../components/Modal/Modal";
 import CursorBlob from "../../components/CursorBlob/CursorBlob";
 import { EVENTS, EVENT_CATEGORIES } from "../../lib/data";
+import { fetchEvents } from "../../lib/api";
+import type { UiEvent } from "../../lib/api";
 import styles from "./page.module.css";
 
 type ModalState = {
@@ -23,16 +25,48 @@ export default function EventsPage() {
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<ModalState | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [events, setEvents] = useState<UiEvent[]>(EVENTS);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const handleFilterChange = (nextFilter: string) => {
+    setFilter(nextFilter);
+    setIsLoading(true);
+    setLoadError(null);
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    fetchEvents(filter)
+      .then((items) => {
+        if (!active) return;
+        setEvents(items.length > 0 ? items : []);
+      })
+      .catch(() => {
+        if (!active) return;
+        setLoadError("Could not load events from backend. Showing local data.");
+        setEvents(
+          EVENTS.filter((ev) => filter === "All" || ev.category === filter),
+        );
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [filter]);
 
   const filtered = useMemo(() => {
-    return EVENTS.filter((ev) => {
-      const matchCat = filter === "All" || ev.category === filter;
+    return events.filter((ev) => {
       const matchSearch =
         ev.title.toLowerCase().includes(search.toLowerCase()) ||
         ev.location.toLowerCase().includes(search.toLowerCase());
-      return matchCat && matchSearch;
+      return matchSearch;
     });
-  }, [filter, search]);
+  }, [events, search]);
 
   return (
     <>
@@ -75,15 +109,21 @@ export default function EventsPage() {
           <FilterBar
             categories={EVENT_CATEGORIES}
             activeFilter={filter}
-            onFilter={setFilter}
+            onFilter={handleFilterChange}
           />
         </div>
+        {loadError && <p className={styles.pageSub}>{loadError}</p>}
 
         <div className={styles.grid}>
-          {filtered.length === 0 ? (
+          {!isLoading && filtered.length === 0 ? (
             <div className={styles.empty}>
               <span>😔</span>
               <p>No events match your search. Try a different filter.</p>
+            </div>
+          ) : isLoading ? (
+            <div className={styles.empty}>
+              <span>⏳</span>
+              <p>Loading events...</p>
             </div>
           ) : (
             filtered.map((ev, i) => (

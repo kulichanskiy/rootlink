@@ -36,6 +36,9 @@ build/
 frontend/node_modules/
 frontend/.next/
 frontend/tsconfig.tsbuildinfo
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
 
 ### OS artifacts ###
 .DS_Store

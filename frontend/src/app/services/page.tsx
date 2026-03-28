@@ -1,11 +1,13 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import ServiceCard from "../../components/ServiceCard/ServiceCard";
 import FilterBar from "../../components/FilterBar/FilterBar";
 import Modal from "../../components/Modal/Modal";
 import CursorBlob from "../../components/CursorBlob/CursorBlob";
 import { SERVICES, SERVICE_CATEGORIES } from "../../lib/data";
+import { fetchServices } from "../../lib/api";
+import type { UiService } from "../../lib/api";
 import styles from "../events/page.module.css";
 import pageStyles from "./page.module.css";
 
@@ -18,17 +20,49 @@ export default function ServicesPage() {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<ModalState | null>(null);
+  const [services, setServices] = useState<UiService[]>(SERVICES);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const handleFilterChange = (nextFilter: string) => {
+    setFilter(nextFilter);
+    setIsLoading(true);
+    setLoadError(null);
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    fetchServices(filter)
+      .then((items) => {
+        if (!active) return;
+        setServices(items.length > 0 ? items : []);
+      })
+      .catch(() => {
+        if (!active) return;
+        setLoadError("Could not load services from backend. Showing local data.");
+        setServices(
+          SERVICES.filter((sv) => filter === "All" || sv.category === filter),
+        );
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [filter]);
 
   const filtered = useMemo(() => {
-    return SERVICES.filter((sv) => {
-      const matchCat = filter === "All" || sv.category === filter;
+    return services.filter((sv) => {
       const matchSearch =
         sv.title.toLowerCase().includes(search.toLowerCase()) ||
         sv.provider.toLowerCase().includes(search.toLowerCase()) ||
         sv.languages.join(" ").toLowerCase().includes(search.toLowerCase());
-      return matchCat && matchSearch;
+      return matchSearch;
     });
-  }, [filter, search]);
+  }, [services, search]);
 
   return (
     <>
@@ -62,18 +96,24 @@ export default function ServicesPage() {
           <FilterBar
             categories={SERVICE_CATEGORIES}
             activeFilter={filter}
-            onFilter={setFilter}
+            onFilter={handleFilterChange}
           />
         </div>
+        {loadError && <p className={styles.pageSub}>{loadError}</p>}
 
         <div className={styles.grid}>
-          {filtered.length === 0 ? (
+          {!isLoading && filtered.length === 0 ? (
             <div className={styles.empty}>
               <span>🔎</span>
               <p>
                 No services match your search. Try a different filter or
                 language.
               </p>
+            </div>
+          ) : isLoading ? (
+            <div className={styles.empty}>
+              <span>⏳</span>
+              <p>Loading services...</p>
             </div>
           ) : (
             filtered.map((sv, i) => (

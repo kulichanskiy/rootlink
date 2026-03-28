@@ -1,6 +1,5 @@
 package com.rootlink.security;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,9 +26,6 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    @Value("${app.cors.allowed-origins}")
-    private String allowedOrigins;
-
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
     }
@@ -41,6 +37,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/", "/error").permitAll()
                 // Public read-only routes (guests can browse)
                 .requestMatchers(HttpMethod.GET,  "/api/events/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/services/**").permitAll()
