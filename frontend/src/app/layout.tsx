@@ -6,6 +6,7 @@ import {
   Syne,
 } from "next/font/google";
 import type { ReactNode } from "react";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "RootLink — Find Your Community",
@@ -40,7 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={`${cormorant.variable} ${syne.variable} ${dmSans.variable}`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
